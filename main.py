@@ -48,13 +48,16 @@ def save_image(url, path):
         file.write(response.content)
 
 
-def check_vk_error(response) -> None | str:
+def check_vk_error(response_json) -> None | str:
     '''
     Отображение ошибки vk
-    :param response:
+    :param response_json:
     :return:
     '''
-    error = response.json().get("error")
+    try:
+        error = response_json.get("error")
+    except AttributeError:
+        return
     if error:
         code = error.get("error_code")
         msg = error["error_msg"]
@@ -71,10 +74,11 @@ def get_upload_url(api_url, token, api_version):
     }
     response = requests.get(method_url, params=params)
     response.raise_for_status()
-    error = check_vk_error(response)
+    response_json = response.json()
+    error = check_vk_error(response_json)
     if error:
         raise requests.HTTPError(error)
-    return response.json()["response"]["upload_url"]
+    return response_json["response"]["upload_url"]
 
 
 def upload_to_server(upload_url, image):
@@ -86,10 +90,11 @@ def upload_to_server(upload_url, image):
         }
         response = requests.post(method_url, files=files)
     response.raise_for_status()
-    error = check_vk_error(response)
+    response_json = response.json()
+    error = check_vk_error(response_json)
     if error:
         raise requests.HTTPError(error)
-    return response.json()
+    return response_json
 
 
 def save_to_album(api_url, token, api_version, img_server, img_photo, img_hash):
@@ -104,10 +109,11 @@ def save_to_album(api_url, token, api_version, img_server, img_photo, img_hash):
     }
     response = requests.post(method_url, params=params)
     response.raise_for_status()
-    error = check_vk_error(response)
+    response_json = response.json()
+    error = check_vk_error(response_json)
     if error:
         raise requests.HTTPError(error)
-    return response.json()
+    return response_json
 
 
 def post_to_the_wall(api_url, token, api_version, owner_id, media_id, group_id, image_alt):
