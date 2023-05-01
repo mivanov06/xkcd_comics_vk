@@ -1,5 +1,7 @@
 import os
 import random
+import sys
+
 import requests
 
 from pathlib import Path
@@ -165,8 +167,12 @@ def publish_to_vk(group_id, token, image, image_alt):
 
 def main():
     load_dotenv()
-    group_id = os.getenv("VK_GROUP_ID")
-    token = os.getenv("VK_ACCESS_TOKEN")
+    try:
+        group_id = os.environ["VK_GROUP_ID"]
+        token = os.getenv("VK_ACCESS_TOKEN")
+    except KeyError:
+        sys.exit("Необходимы VK_GROUP_ID, VK_ACCESS_TOKEN в файле .env")
+        return
     image_url, image_alt = fetch_random_comic()
     image_path = compose_filepath(image_url)
     try:
