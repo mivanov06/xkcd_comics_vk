@@ -10,12 +10,12 @@ from urllib.parse import urlparse
 from urllib.parse import unquote
 
 
-def fetch_random_comic() -> list():
-    '''
+def fetch_random_comic() -> tuple:
+    """
     Получить ссылку и инфо на случайный комикс
     :return:
     image_url, image_alt
-    '''
+    """
     url = "https://xkcd.com/"
     info_path = "/info.0.json"
     response = requests.get(f"{url}{info_path}")
@@ -38,12 +38,12 @@ def compose_filepath(url: str) -> Path:
 
 
 def save_image(url, path):
-    '''
+    """
     Сохранить изображение по ссылке url в path
     :param url:
     :param path:
     :return:
-    '''
+    """
     response = requests.get(url)
     response.raise_for_status()
     with open(path, "wb") as file:
@@ -51,11 +51,11 @@ def save_image(url, path):
 
 
 def check_vk_error(response_json) -> None | str:
-    '''
+    """
     Отображение ошибки vk
     :param response_json:
     :return:
-    '''
+    """
     try:
         error = response_json.get("error")
     except AttributeError:
@@ -64,7 +64,6 @@ def check_vk_error(response_json) -> None | str:
         code = error.get("error_code")
         msg = error["error_msg"]
         return f"[VK Error: {code}] {msg}" if code else msg
-    return
 
 
 def get_upload_url(token, api_version):
@@ -131,7 +130,8 @@ def post_to_the_wall(token, api_version, owner_id, media_id, group_id, image_alt
     }
     response = requests.get(method_url, params=params)
     response.raise_for_status()
-    error = check_vk_error(response)
+    response_json = response.json()
+    error = check_vk_error(response_json)
     if error:
         raise requests.HTTPError(error)
 
