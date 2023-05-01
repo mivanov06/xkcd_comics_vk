@@ -65,9 +65,9 @@ def check_vk_error(response_json) -> None | str:
     return
 
 
-def get_upload_url(api_url, token, api_version):
+def get_upload_url(token, api_version):
     method = "photos.getWallUploadServer"
-    method_url = f"{api_url}method/{method}"
+    method_url = f"https://api.vk.com/method/{method}"
     params = {
         "access_token": token,
         "v": api_version,
@@ -97,9 +97,9 @@ def upload_to_server(upload_url, image):
     return response_json
 
 
-def save_to_album(api_url, token, api_version, img_server, img_photo, img_hash):
+def save_to_album(token, api_version, img_server, img_photo, img_hash):
     method = "photos.saveWallPhoto"
-    method_url = f"{api_url}method/{method}"
+    method_url = f"https://api.vk.com/method/{method}"
     params = {
         "access_token": token,
         "v": api_version,
@@ -116,9 +116,9 @@ def save_to_album(api_url, token, api_version, img_server, img_photo, img_hash):
     return response_json
 
 
-def post_to_the_wall(api_url, token, api_version, owner_id, media_id, group_id, image_alt):
+def post_to_the_wall(token, api_version, owner_id, media_id, group_id, image_alt):
     method = "wall.post"
-    method_url = f"{api_url}method/{method}"
+    method_url = f"https://api.vk.com/method/{method}"
     params = {
         "access_token": token,
         "v": api_version,
@@ -135,10 +135,8 @@ def post_to_the_wall(api_url, token, api_version, owner_id, media_id, group_id, 
 
 
 def publish_to_vk(group_id, token, image, image_alt):
-    api_url = "https://api.vk.com/"
     api_version = 5.131
     upload_url = get_upload_url(
-        api_url,
         token,
         api_version,
     )
@@ -147,7 +145,6 @@ def publish_to_vk(group_id, token, image, image_alt):
     img_photo = upload_response["photo"]
     img_hash = upload_response["hash"]
     save_response = save_to_album(
-        api_url,
         token,
         api_version,
         img_server,
@@ -157,7 +154,6 @@ def publish_to_vk(group_id, token, image, image_alt):
     owner_id = save_response["response"][0]["owner_id"]
     media_id = save_response["response"][0]["id"]
     post_to_the_wall(
-        api_url,
         token,
         api_version,
         owner_id,
