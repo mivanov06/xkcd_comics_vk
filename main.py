@@ -169,9 +169,9 @@ def main():
     load_dotenv()
     try:
         group_id = os.environ["VK_GROUP_ID"]
-        token = os.getenv("VK_ACCESS_TOKEN")
+        token = os.environ["VK_ACCESS_TOKEN"]
     except KeyError:
-        sys.exit("Необходимы VK_GROUP_ID, VK_ACCESS_TOKEN в файле .env")
+        sys.exit("Необходимы VK_GROUP_ID, VK_ACCESS_TOKEN в файле .env. Проверьте файл .env")
         return
     image_url, image_alt = fetch_random_comic()
     image_path = compose_filepath(image_url)
