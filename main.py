@@ -50,14 +50,14 @@ def save_image(url, path):
         file.write(response.content)
 
 
-def check_vk_error(data) -> None | str:
+def check_vk_error(response) -> None | str:
     """
     Отображение ошибки vk
-    :param data:
+    :type response
     :return:
     """
     try:
-        error = data.get("error")
+        error = response.get("error")
     except AttributeError:
         return
     if error:
@@ -75,11 +75,11 @@ def get_upload_url(token, api_version):
     }
     response = requests.get(method_url, params=params)
     response.raise_for_status()
-    data = response.json()
-    error = check_vk_error(data)
+    server_upload = response.json()
+    error = check_vk_error(server_upload)
     if error:
         raise requests.HTTPError(error)
-    return data["response"]["upload_url"]
+    return server_upload["response"]["upload_url"]
 
 
 def upload_to_server(upload_url, image):
@@ -91,11 +91,11 @@ def upload_to_server(upload_url, image):
         }
         response = requests.post(method_url, files=files)
     response.raise_for_status()
-    data = response.json()
-    error = check_vk_error(data)
+    photo = response.json()
+    error = check_vk_error(photo)
     if error:
-        raise data.HTTPError(error)
-    return data
+        raise photo.HTTPError(error)
+    return photo
 
 
 def save_to_album(token, api_version, img_server, img_photo, img_hash):
@@ -110,11 +110,11 @@ def save_to_album(token, api_version, img_server, img_photo, img_hash):
     }
     response = requests.post(method_url, params=params)
     response.raise_for_status()
-    data = response.json()
-    error = check_vk_error(data)
+    album = response.json()
+    error = check_vk_error(album)
     if error:
         raise requests.HTTPError(error)
-    return data
+    return album
 
 
 def post_to_the_wall(token, api_version, owner_id, media_id, group_id, image_alt):
@@ -130,8 +130,8 @@ def post_to_the_wall(token, api_version, owner_id, media_id, group_id, image_alt
     }
     response = requests.get(method_url, params=params)
     response.raise_for_status()
-    data = response.json()
-    error = check_vk_error(data)
+    post_id = response.json()
+    error = check_vk_error(post_id)
     if error:
         raise requests.HTTPError(error)
 
